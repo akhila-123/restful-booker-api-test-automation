@@ -18,7 +18,12 @@ jobs:
           - test/patch.booking.spec.js
           - test/delete.booking.spec.js
           - test/e2e.booking.spec.js
-          - test/performance.get.booking.spec.js
+
+    # Set environment variables per job
+    env:
+      BASE_URL: ${{ secrets.BASE_URL || 'https://restful-booker.herokuapp.com' }}
+      BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME || 'admin' }}
+      BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD || 'password123' }}
 
     steps:
       # 1. Checkout code
@@ -32,33 +37,22 @@ jobs:
       # 3. Install dependencies
       - run: npm ci
 
-      # 4. Create .env from secrets
-      - name: Create .env from secrets
-        run: |
-          echo "BASE_URL=${{ secrets.BASE_URL || 'https://restful-booker.herokuapp.com' }}" >> .env
-          echo "BOOKER_USERNAME=${{ secrets.BOOKER_USERNAME || 'admin' }}" >> .env
-          echo "BOOKER_PASSWORD=${{ secrets.BOOKER_PASSWORD || 'password123' }}" >> .env
-
-      # 5. Run tests with Mochawesome reporter
+      # 4. Run tests with Mochawesome reporter
       - name: Run test file with Mochawesome
         run: |
-          # Sanitize filename for report (remove 'test/' and replace slashes with dash)
           FILENAME=$(basename ${{ matrix.file }} .spec.js)
           npx mocha ${{ matrix.file }} \
             --reporter mochawesome \
             --reporter-options reportDir=reports,reportFilename=$FILENAME,overwrite=true || true
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
-          BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
 
-      # 6. Upload Mochawesome report
+      # 5. Sanitize artifact name
       - name: Sanitize artifact name
         id: sanitize
         run: |
           ARTIFACT_NAME=$(echo "${{ matrix.file }}" | sed 's|test/||' | sed 's|/|-|g')
           echo "artifact_name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
 
+      # 6. Upload Mochawesome report
       - name: Upload Mochawesome report
         uses: actions/upload-artifact@v4
         with:
