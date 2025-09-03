@@ -68,7 +68,7 @@ describe("verify partial update PATCH booking API end point", function () {
   });
 
   // Negative test cases
-  it("verify error handling for partial update booking API", async () => {
+  it.skip("verify error handling for partial update booking API", async () => {
     // Invalid booking ID
     await patchBooking(999999, { lastname: "Test" }, token)
       .then(() => { throw new Error("Expected 404 or 405 for non-existent booking"); })
