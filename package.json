@@ -1,0 +1,24 @@
+{
+  "name": "restful-booker-api-test-automation",
+  "version": "1.0.0",
+  "description": "Automated API tests for Restful-Booker using Mocha + Chai + Axios",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "pretest": "mkdir -p reports && rimraf reports/*",
+    "test": "mocha --timeout  15000 --reporter mochawesome",
+    "test:report": "mocha --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports,reportFilename=index,quiet=true",
+    "test:ci": "mocha --timeout 15000 --reporter spec --retries 1",
+    "lint": "eslint .",
+    "format": "prettier -w ."
+  },
+  "author": "Akhila Bandiki",
+  "license": "ISC",
+  "devDependencies": {
+    "axios": "^1.11.0",
+    "chai": "^4.3.7",
+    "dotenv": "^17.2.1",
+    "mocha": "^11.7.1",
+    "mochawesome": "^7.1.3"
+  }
+}

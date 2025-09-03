@@ -1,0 +1,13 @@
+[
+  { "name": "update firstname", "body": { "firstname": "Alice" } },
+  { "name": "update lastname", "body": { "lastname": "Smith" } },
+  { "name": "update totalprice", "body": { "totalprice": 777 } },
+  {
+    "name": "update nested bookingdates",
+    "body": { "bookingdates": { "checkin": "2024-02-01", "checkout": "2024-02-03" } }
+  },
+  {
+    "name": "multiple fields",
+    "body": { "firstname": "Bob", "lastname": "Marley", "depositpaid": false }
+  }
+]

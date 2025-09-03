@@ -1,0 +1,17 @@
+{
+  "filters": [
+    { "name": "filter by firstname", "params": { "firstname": "John" } },
+    { "name": "filter by lastname", "params": { "lastname": "Smith" } },
+    { "name": "filter by checkin date", "params": { "checkin": "2024-01-01" } },
+    {
+      "name": "filter by checkout date",
+      "params": { "checkout": "2024-12-31" }
+    },
+    {
+      "name": "combine firstname+lastname",
+      "params": { "firstname": "John", "lastname": "Smith" }
+    }
+  ],
+  "invalidDate": { "checkin": "2000-20-90" },
+  "invalidParameter": { "firstname": 12345 }
+}

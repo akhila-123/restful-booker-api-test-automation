@@ -1,0 +1,30 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Create .env from secrets
+        run: |
+          echo "BASE_URL=${{ secrets.BASE_URL || 'https://restful-booker.herokuapp.com' }}" >> .env
+          echo "BOOKER_USERNAME=${{ secrets.BOOKER_USERNAME || 'admin' }}" >> .env
+          echo "BOOKER_PASSWORD=${{ secrets.BOOKER_PASSWORD || 'password123' }}" >> .env
+      - name: Run tests with report
+        run: npm run test:report
+      - name: Upload mochawesome report
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome-report
+          path: reports
