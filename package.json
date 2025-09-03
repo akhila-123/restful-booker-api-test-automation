@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "pretest": "mkdir -p reports && rimraf reports/*",
-    "test": "mocha --timeout  15000 --reporter mochawesome",
+    "test": "mocha --timeout  15000",
     "test:report": "mocha --timeout 10000 --reporter mochawesome --reporter-options reportDir=reports,reportFilename=index,quiet=true",
     "test:ci": "mocha --timeout 15000 --reporter spec --retries 1",
     "lint": "eslint .",

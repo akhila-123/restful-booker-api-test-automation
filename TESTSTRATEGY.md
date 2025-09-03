@@ -1,12 +1,11 @@
 # Test Strategy / Plan
 
 ## Scope
-Covers GET /booking (filters, structure, perf), PATCH /booking/{id} (fields, nested, idempotency, errors), DELETE /booking/{id} (success, verification, concurrency, auth).
+Covers GET /booking (filters, structure, performance), PATCH /booking/{id} (fields, nested, idempotency, errors), DELETE /booking/{id} (success, verification, concurrency, auth).
 
 ## Approach
-- API-first automated checks via Jest + Axios
-- Schema checks via Zod
-- Data-driven cases via JSON in /data
+- API-first automated checks via Mocha + Chai + Axios
+- Data-driven cases via JSON in /testData
 - Performance smoke via repeated timings
 - E2E flows for cross-endpoint consistency
 
@@ -20,76 +19,52 @@ Covers GET /booking (filters, structure, perf), PATCH /booking/{id} (fields, nes
 ## Reporting
 - HTML report (jest-html-reporter) with console logs for timings.
 
-Test Coverage Plan
-A. GET /booking
+ ## Test Coverage Plan
+A. GET /booking – Get Booking IDs
 
-Scenarios:
-
-No filters (basic list retrieval)
-
-Filter by: firstname, lastname, checkin, checkout
-
-Combined filters
-
-Invalid date format (expect 400)
-
-Invalid parameter (e.g., unknown field)
-
-Performance: Assert response.elapsed.total_seconds() < 2
-
-Validate response schema (IDs list → use jsonschema if possible)
+1. Retrieve all booking IDs without filters (basic list retrieval)
+2. Filter by: firstname, lastname, checkin, checkout
+3. Combine multiple filters
+4. Invalid date format (expect 400)
+5. Invalid parameter (e.g., unknown field)
+6. Validate response schema (IDs list → use jsonschema if possible)
+7. Invalid request payload API should return 400
+8. Verify SQL injection attempts
 
 B. PATCH /booking/{id}
 
-Scenarios:
-
-Update single field (firstname)
-
-Update multiple fields
-
-Update nested fields (bookingdates)
-
-Verify unchanged fields remain intact
-
-Invalid booking ID (expect 404)
-
-Invalid payload (wrong type, malformed JSON)
-
-Missing auth → 401
-
-Idempotency: Send same PATCH twice → no duplicate side effects
+1. Update single field (firstname)
+2. Update multiple fields
+3. Update nested fields (bookingdates)
+4. Verify unchanged fields remain intact
+5. Invalid booking ID (expect 404)
+6. Invalid payload (wrong type, malformed JSON)
+7. Missing authentication → 401
+8. Idempotency: Send same PATCH twice → no duplicate side effects
 
 C. DELETE /booking/{id}
 
-Scenarios:
+1. Delete existing booking
+2. Verify deletion (GET → 404)
+3.  Delete non-existing booking (graceful response)
+4. Missing authentication → 401
+5. Correct status codes (201 for success – per spec, though normally 204 is expected)
+6. Concurrent deletion: Send multiple DELETEs for same ID → only one should succeed
 
-Delete existing booking
+D. INTEGRATION TESTS (e2e)
 
-Verify deletion (GET → 404)
+1. Create → Update → Verify → Delete flow
+2. Bulk create (loop) → Filter them → Patch them → Delete all flow
+3. Verify cross-endpoint data consistency verification
 
-Delete non-existing booking (graceful response)
+E. PERFORMANCE TEST
 
-Missing auth → 401
+1. Verify the performance when retriving all booking IDs without filters and be fast (<2s)
 
-Correct status codes (201 for success – per spec, though normally 204 is expected)
+## Advanced Testing Requirements
 
-Concurrent deletion: Send multiple DELETEs for same ID → only one should succeed
+Data-Driven Testing
+Negative Testing
+Integration Testing
 
-4. Advanced Testing Requirements
 
-Data-Driven Tests:
-Use pytest.mark.parametrize with JSON/CSV files (in /data) to feed different inputs for filters, patch payloads, and invalid data.
-
-Negative Testing:
-
-Malformed JSON
-
-Special characters (e.g., '";DROP TABLE bookings;-- for SQL injection attempt)
-
-Boundary values for totalprice (negative, extremely large)
-
-Integration Test Flow:
-
-Create → Update → Verify → Delete
-
-Bulk create (loop) → filter them → patch them → delete all
