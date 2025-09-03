@@ -19,6 +19,7 @@
 ## CI
 - GitHub Actions workflow provided at .github/workflows/nodejs-api-tests.yml
 - Set AUTH_USER and AUTH_PASS as repository secrets.
+- Implemented parallel execution 
 
 ## Structure
 - utils: Api client and helpers

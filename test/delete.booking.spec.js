@@ -79,6 +79,4 @@ describe('verify DELETE booking API endpoint', () => {
     expect(results[1].status === 'fulfilled' ? results[1].value.status : results[1].reason.response.status)
       .to.equal(405);
   });
-
-  // include negative scenarios (additional tests can be added here)
 });

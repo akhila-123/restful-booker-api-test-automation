@@ -51,8 +51,9 @@ describe("verify the GET booking API end point", () => {
     console.log(response.status, response.data); // Optional debug
     expect([200, 400]).to.include(response.status);
     expect(response.data.length).to.be.equals(0);
+    // response is 200 with empty array
   });
-  // response is 200 with empty array
+
 
   it("Verify response structure and data types", async () => {
     const response = await getBookings();
@@ -70,10 +71,11 @@ describe("verify the GET booking API end point", () => {
 
   //negative scenarios
   it("Verify for invalid request payload API should return 400", async () => {
+    //this test is failing as API is returning 200
   const response = await getBookings({ data: { invalidKey: true } }); // Sending unexpected payload
   expect(response.status).to.be.equal(400); // Depending on API spec
   });
-  //this test is failing as API is returning 200
+  
 
   it("Verify SQL injection attempts", async () => {
   const sqlPayload = "'; DROP TABLE bookings; --";

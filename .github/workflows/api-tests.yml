@@ -10,21 +10,38 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      matrix:
+        file:
+          - test/get.booking.spec.js
+          - test/patch.booking.spec.js
+          - test/delete.booking.spec.js
+          - test/e2e.booking.spec.js
+          - test/performance.get.booking.spec.js
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+
       - run: npm ci
+
       - name: Create .env from secrets
         run: |
           echo "BASE_URL=${{ secrets.BASE_URL || 'https://restful-booker.herokuapp.com' }}" >> .env
           echo "BOOKER_USERNAME=${{ secrets.BOOKER_USERNAME || 'admin' }}" >> .env
           echo "BOOKER_PASSWORD=${{ secrets.BOOKER_PASSWORD || 'password123' }}" >> .env
+
       - name: Run tests with report
-        run: npm run test:report || true
+        run: npx mocha ${{ matrix.file }} --reporter mochawesome --reporter-options reportDir=reports,reportFilename=${{ matrix.file }} || true
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
+          BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
+
       - name: Upload mochawesome report
         uses: actions/upload-artifact@v4
         with:
-          name: mochawesome-report
-          path: reports
+          name: mochawesome-report-${{ matrix.file }}
+          path: reports/
