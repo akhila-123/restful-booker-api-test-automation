@@ -17,6 +17,7 @@ jobs:
           - test/patch.booking.spec.js
           - test/delete.booking.spec.js
           - test/e2e.booking.spec.js
+          - test/performance.get.booking.spec.js
     steps:
       - uses: actions/checkout@v4
 
