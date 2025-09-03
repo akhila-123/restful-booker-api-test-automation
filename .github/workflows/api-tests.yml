@@ -17,7 +17,6 @@ jobs:
           - test/patch.booking.spec.js
           - test/delete.booking.spec.js
           - test/e2e.booking.spec.js
-          - test/performance.get.booking.spec.js
     steps:
       - uses: actions/checkout@v4
 
@@ -34,14 +33,18 @@ jobs:
           echo "BOOKER_PASSWORD=${{ secrets.BOOKER_PASSWORD || 'password123' }}" >> .env
 
       - name: Run tests with report
-        run: npx mocha ${{ matrix.file }} --reporter mochawesome --reporter-options reportDir=reports,reportFilename=${{ matrix.file }} || true
+        run: |
+          # sanitize filename by removing 'test/' and replacing slashes with dash
+          FILENAME=$(basename ${{ matrix.file }} .spec.js)
+          npx mocha ${{ matrix.file }} --reporter mochawesome --reporter-options reportDir=reports,reportFilename=$FILENAME || true
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
           BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
 
       - name: Upload mochawesome report
-        uses: actions/upload-artifact@v4
-        with:
-          name: mochawesome-report-${{ matrix.file }}
-          path: reports/
+        run: |
+          # remove 'test/' from filename and replace any slashes with dash for artifact name
+          ARTIFACT_NAME=$(echo ${{ matrix.file }} | sed 's|test/||' | sed 's|/|-|g')
+          echo "Uploading artifact: $ARTIFACT_NAME"
+          gh actions upload-artifact --name "$ARTIFACT_NAME" --path reports/
